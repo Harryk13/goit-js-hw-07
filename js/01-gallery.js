@@ -16,13 +16,26 @@ const imagesMarkup = galleryItems.reduce((str, { preview, original, description 
 }, '');
 $gallery.insertAdjacentHTML('afterbegin', imagesMarkup);
 
-
 const onContainerClick = (event) => {
     event.preventDefault();
 
     if (!event.target.classList.contains("gallery")) {
+        let onEsc;
+
         const source = event.target.dataset.source;
-        const instance = basicLightbox.create(`<img src="${source}"width="800" height="600">`);
+        const instance = basicLightbox.create(
+            `<img src="${source}"width="800" height="600">`,
+            {
+                onShow: () => window.addEventListener('keydown', onEsc),
+                onClose: () => window.removeEventListener('keydown', onEsc)
+            }
+        );
+
+        onEsc = (event) => {
+            if (event.code.toLowerCase() === 'escape') {
+                instance.close();
+            }
+        }
 
         instance.show();
     }
